@@ -1,118 +1,115 @@
 #include <iostream>
-#define MAX_SIZE 100
 using namespace std;
-void getch();
-void clrscr();
-template <class T>
+
 class Stack
 {
-protected:
- int tos, size;
- T arr[MAX_SIZE];
 public:
- Stack(int size = 30)
- {
- this->tos = -1;
- this->size = size;
- }
- bool push(T ele)
- {
- if (this->tos >= (this->size - 1))
- {
- cerr << "ERROR: Stack Overflow\n";
-return false;
- }
- this->arr[++(this->tos)] = ele;
- return true;
-}
-T pop() { 
- if (this->isEmpty())
-{
- cout << "ERROR: Stack Underflow\n";
- return (T)(NULL);
-} 
- return this->arr[(this->tos)--];
-}
-T top() { 
- if (this->isEmpty())
-{
-cout << "Stack Empty"; return (T)(NULL); 
-} 
- return this->arr[this->tos];
-}
-bool isEmpty()
-{
- return this->tos == -1;
-}
-void clear()
-{
- while (!this->isEmpty())
- this->pop();
-}
-void display()
-{
- if (this->isEmpty())
- {
-cout << "Stack Empty"; 
-return; } 
- int i;
- cout << "Stack: ";
- for (i = 0; i < this->tos; i++)
- cout << this->arr[i] << " -> ";
-cout << this->arr[i] << endl;
-return; } 
+    // properties
+    int *arr;
+    int size;
+    int top;
+
+    // constructor
+    Stack(int size)
+    {
+        this->size = size;
+        top = -1;
+        arr = new int(size);
+    }
+
+    // push operation
+    void push(int element)
+    {
+        if (size - top > 1)
+        {
+            top++;
+            arr[top] = element;
+        }
+        else
+        {
+            cout << "Stack OverFow" << endl;
+        }
+    }
+
+    // pop operation
+    void pop()
+    {
+        if (top >= 0)
+        {
+            top--;
+        }
+        else
+        {
+            cout << "Stack UnderFlow" << endl;
+        }
+    }
+
+    // find top element
+    int peek()
+    {
+        if (top >= 0)
+        {
+            return arr[top];
+        }
+        else
+        {
+            cout << "Stack is empty" << endl;
+            return -1;
+        }
+    }
+
+    // find size
+    int stackSize()
+    {
+        if (top >= 0)
+        {
+            return size;
+        }
+        else
+        {
+            cout << "Stack is empty" << endl;
+            return -1;
+        }
+    }
+
+    // find empty
+    bool emptyCheck()
+    {
+        if (top >= 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 };
-int main(void)
+
+int main()
 {
- int n, el, res, choice;
- cout << "Enter size of stack: ";
-cin >> n;
-Stack<int> stack(n);
-do
-{
-cout << "\tStack - Arrays\n";
-cin >> choice;
-switch (choice)
-{
-case 1:
- cout << "\nEnter Element: ";
- cin >> el;
- res = stack.push(el);
- if (res)
- {
- cout << "\nPushed " << el << "...\n";
- stack.display();
-} 
- break;
-case 2:
- res = stack.pop();
- if (res)
- {
-cout << "\nPopped " << res << "...\n"; 
- stack.display();
- }
- break;
-case 3:
- cout << "\nTop Element: "
- << stack.top() << endl;
- break;
-case 4:
- stack.clear();
- break;
-case 5:
-stack.display();
-default:
-break; } 
-getch();
-clrscr();
-} while (choice != 0);
-return 0; }
-void getch()
-{ 
-#ifdef _WIN32
- system("cls");
-#elif _unix_
- system("clear");
-#endif
- return;
+
+    Stack st(3);
+
+    st.push(15);
+    st.push(29);
+
+    cout << "Top element - " << st.peek() << endl;
+
+    st.push(15);
+
+    cout << "Top element - " << st.peek() << endl;
+
+    st.pop();
+    st.pop();
+    st.pop();
+    st.pop();
+
+    cout << "Top element - " << st.peek() << endl;
+
+    (st.emptyCheck() == 0) ? cout << "Empty" << endl : cout << "Non-Empty" << endl;
+
+    cout << "Size of stack - " << st.stackSize() << endl;
+
+    return 0;
 }
