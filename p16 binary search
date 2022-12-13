@@ -1,0 +1,315 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+template<typename M>
+class BSTNode{
+    private:
+    M data;
+    BSTNode<M>* left;
+    BSTNode<M>*  right;
+    public:
+    BSTNode(){
+        left=right=0;
+    }
+    BSTNode(const M& elem,BSTNode<M>* l=0,BSTNode<M>* r=0){
+        data=elem;
+        left=l;
+        right=r;
+    }
+    template<typename U>
+    friend class BST;
+};
+
+template<typename T>
+class BST{
+    public:
+    bool equals(BST<T> t2){
+        return equals(root,t2.root);
+    }
+    
+    BST(){
+        root=0;
+    }
+    ~BST(){
+        clear();
+    }
+    void clear(){
+        clear(root);
+        root=0;
+    }
+    bool empty(){
+        return(root==0);
+    }
+    void preorder(){
+        preorder(root);
+    }
+    void postorder(){
+        postorder(root);
+    }
+    void inorder(){
+        inorder(root);
+    }
+    void search_replace(const T& x,const T& y){
+        deleteByCopying(x);
+        insert(y);
+    }
+    BSTNode<T>* search(const T& elem){
+        BSTNode<T>* p=root;
+        while (p!=0)
+        {
+            if(p->data==elem)
+            return p;
+            else if(elem>p->data)
+            p=p->right;
+            else 
+            p=p->left;
+        }
+        return p;
+        
+    }
+    BSTNode<T>* findMIn(){
+        BSTNode<T>*p=root;
+        if(p==0) throw "Empty Tree";
+        while(p->left!=0){
+            p=p->left;
+        }
+        return p;
+    }
+    BSTNode<T>* findMax(){
+        BSTNode<T>*p=root;
+        if(p==0) throw "Empty Tree";
+        while(p->right!=0){
+            p=p->right;
+        }
+        return p;
+    }
+    void insert(const T& elem){
+        BSTNode<T>* p=root,*prev=0;
+        while(p!=0){
+            prev=p;
+            if(p->data < elem)
+            p=p->right;
+            else 
+            p=p->left;
+        }
+        if(root==0)
+        root=new BSTNode<T>(elem);
+        else if(prev->data <elem)
+        prev->right=new BSTNode<T>(elem);
+        else 
+        prev->left=new BSTNode<T>(elem);
+    }
+    void breadthfirst(){
+        queue<BSTNode<T>*> que;
+        BSTNode<T>* p=root;
+        if(p!=0){
+            que.push(p);
+            while(!que.empty()){
+                p=que.front();
+                que.pop();
+                cout<<p->data<<" ";
+                if(p->left!=0){
+                    que.push(p->left);
+                }
+                if(p->right!=0){
+                    que.push(p->right);
+                }
+            }
+        }
+    }
+    int no_of_nodes(){
+        if(root==0) return 0;
+        else if((root->left==0)&&(root->right==0)) return 1;
+        else
+        return (1+no_of_nodes(root->left)+no_of_nodes(root->right));
+    }
+    //deleting
+    void deleteByCopying(int x){
+        if(root==0) throw "Empty tree"; //checking whether tree is empty 
+        BSTNode<T>* p=root;
+        BSTNode<T>* fp=0;
+        while(p!=0 && p->data!=x){        //traversig tree until not found
+            fp=p;
+            if(x<p->data) p=p->left;
+            else p=p->right;
+        }
+        if(p==0) throw "Element not present";
+        bool lft;
+        if(fp!=0 ) lft=(x<fp->data)? true:false;                 //finding if p is left or rigth child
+        //if deleted nod is a leaf
+        if(p->left==0 && p->right==0){
+            if(fp==0){
+                root=0;
+                return;}
+            else{
+                if(lft) fp->left=0;
+                else fp->right=0;
+            }
+        }
+        //if deleted node has one child;
+        else if(p->left==0){
+            if(fp==0){
+                root=p->right;
+                return;
+            }
+            if(lft) fp->left=p->right;
+            else fp->right=p->right;
+        }
+        else if(p->right==0){
+            if(fp==0){
+                root=p->left;
+                return;
+            }
+            if(lft) fp->left=p->left;
+            else fp->right=p->left;
+        }
+        //if deleted node has two children
+        else{
+            BSTNode<T>* q=p->right;
+            BSTNode<T>* fq=p;
+            while(q->left!=0){
+                fq=q;
+                q=q->left;
+            }
+            p->data=q->data;
+            if(q->data<fq->data) fq->left=q->right;
+            else fq->right=q->right;
+            delete q;
+        }
+    }
+    //by merging
+    void deleteByMerging(int x){
+        if(root==0) throw "Empty tree"; //checking whether tree is empty 
+        BSTNode<T>* p=root;
+        BSTNode<T>* fp=0;
+        while(p!=0 && p->data!=x){        //traversig tree until not found
+            fp=p;
+            if(x<p->data) p=p->left;
+            else p=p->right;
+        }
+        if(p==0) throw "Element not present";
+        bool lft;
+        if(fp!=0 ) lft=(x<fp->data)? true:false;                 //finding if p is left or rigth child
+        //if deleted nod is a leaf
+        if(p->left==0 && p->right==0){
+            if(fp==0){
+                root=0;
+                return;}
+            else{
+                if(lft) fp->left=0;
+                else fp->right=0;
+            }
+        }
+        //if deleted node has one child;
+        else if(p->left==0){
+            if(fp==0){
+                root=p->right;
+                return;
+            }
+            if(lft) fp->left=p->right;
+            else fp->right=p->right;
+        }
+        else if(p->right==0){
+            if(fp==0){
+                root=p->left;
+                return;
+            }
+            if(lft) fp->left=p->left;
+            else fp->right=p->left;
+        }
+        //if deleted node has two children
+        else{
+            BSTNode<T>* q=p->left;
+            BSTNode<T>* rt=p->right;
+            while(q->right!=0){
+                q=q->right;
+            }
+            q->right=rt;
+            if(fp==0) root=p->left;
+            else {
+                if(p->data > fp->data) fp->right=p->left;
+                else fp->left=p->left;
+            }
+            delete p;
+        }
+    }
+    protected:
+    BSTNode<T>* root;
+    void clear(BSTNode<T>* p){
+        delete p;
+    }
+    int no_of_nodes(BSTNode<T>* p){
+        if(p==0) return 0;
+        else if((p->left==0)&&(p->right==0)) return 1;
+        else
+        return (1+no_of_nodes(p->left)+no_of_nodes(p->right));
+    }
+    bool equals(BSTNode<T>* p,BSTNode<T>* p1){
+        if(p==0 && p1==0)
+        return true;
+        else if(p==0 || p1==0)
+        return false;
+        else if(p->data==p1->data)
+        return (equals(p->left,p1->left) && equals(p->right,p1->right));
+        else 
+        return false;
+    }
+    void preorder(BSTNode<T>* p){
+        if(p!=0){
+            cout<<p->data<<" ";
+            preorder(p->left);
+            preorder(p->right);
+        }
+    }
+    void postorder(BSTNode<T>* p){
+        if(p!=0){
+            postorder(p->left);
+            postorder(p->right);
+            cout<<p->data<<" ";
+        }
+    }
+    void inorder(BSTNode<T>* p){
+        if(p!=0){
+            inorder(p->left);
+            cout<<p->data<<" ";
+            inorder(p->right);
+        }
+    }
+};
+int main(){
+    BST<int> t1;
+    t1.insert(10);
+    t1.insert(11);
+    t1.insert(5);
+    t1.insert(9);
+    t1.insert(4);
+    t1.insert(12);
+    //t1.inorder();
+    //cout<<endl;
+    t1.breadthfirst();
+    cout<<endl;
+    BST<int> t2;
+    t2.insert(15);
+    t2.insert(10);
+     t2.insert(30);
+    t2.insert(5);
+    t2.insert(11);
+    t2.insert(20);
+    t2.insert(40);
+    t2.insert(12);
+    //t2.insert(20);
+    t2.breadthfirst();
+    cout<<endl;
+    t2.deleteByMerging(15);
+    t2.breadthfirst();
+    cout<<endl;
+    t2.insert(15);
+    t2.insert(10);
+    t2.insert(30);
+    t2.breadthfirst();
+    cout<<endl;
+    t2.search_replace(10,1);
+    t2.breadthfirst();
+    //cout<<t1.equals(t2);
+    return 0;
+}
