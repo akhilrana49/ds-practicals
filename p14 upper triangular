@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+class UpperTriangularMatrix
+{
+public:
+    int *arr, row, col;
+
+    // constructor
+    UpperTriangularMatrix(int row, int col)
+    {
+        this->row = row;
+        this->col = col;
+        arr = new int[row * col];
+    }
+
+    // set function
+    void set()
+    {
+        int k = 0;
+        int element;
+        cout << "Enter elements of an Array - " << endl;
+        for (int i = 1; i <= row; i++)
+        {
+            for (int j = 1; j <= col; j++)
+            {
+                cin >> element;
+                if (i <= j)
+                {
+                    arr[k] = element;
+                    k++;
+                }
+            }
+        }
+    }
+
+    // get function
+    void get(int row, int col)
+    {
+        cout << "Your element which you can access - ";
+        if (row <= col)
+            cout << arr[(col * (col - 1)) / 2 + (row - 1)] << endl;
+        else if (row > col)
+            cout << 0 << endl;
+    }
+};
+int main()
+{
+    UpperTriangularMatrix *m1 = new UpperTriangularMatrix(3, 3);
+    m1->set();
+    m1->get(1, 2);
+
+    return 0;
+}
