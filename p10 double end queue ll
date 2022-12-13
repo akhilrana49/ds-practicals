@@ -1,0 +1,83 @@
+#include <iostream>
+using namespace std;
+#include "4.cpp"
+
+typedef string Elem; // deque element type
+class LinkedDeque
+{ // deque as doubly linked list
+
+public:
+    LinkedDeque();                               // constructor
+    int size() const;                            // number of items in the deque
+    bool empty() ;                          // is the deque empty?
+    const Elem &front() const;  // the first element
+    const Elem &back() const;   // the last element
+    void insertFront(const Elem &e);             // insert new first element
+    void insertBack(const Elem &e);              // insert new last element
+    void removeFront();       // remove first element
+    void removeBack();   // remove last element
+    void display();
+
+private:           // member data
+    DLinkedList D; // linked list of elements
+    int n;         // number of elements
+};
+
+LinkedDeque::LinkedDeque()
+: D() , n(0) {}
+bool LinkedDeque::empty() {
+    return D.empty();
+}
+int LinkedDeque::size() const {
+    return n;
+}
+const Elem &LinkedDeque:: front() const{
+    return D.front();
+};
+const Elem &LinkedDeque::back() const{
+    return D.back();
+}
+void LinkedDeque::insertFront(const Elem &e)
+{
+    D.addFront(e);
+    n++;
+}
+
+// insert new last element
+void LinkedDeque::insertBack(const Elem &e)
+{
+    D.addBack(e);
+    n++;
+} // remove first element
+void LinkedDeque::removeFront()
+{
+    if (D.empty())
+        throw "Dequeue Empty";
+    D.removeFront();
+    n--;
+}
+
+// remove last element
+void LinkedDeque::removeBack() 
+{
+    if (empty())
+        throw "DequeEmpty";
+    D.removeBack();
+    n--;
+}
+void LinkedDeque::display(){
+    cout<<n<<endl;
+    D.display();
+}
+
+int main()
+{
+    LinkedDeque l;
+    l.insertFront("manxjs");
+    l.insertFront("ftdfgb");
+    l.insertBack("xvfd");
+    l.insertBack("xfd");
+    l.display();
+
+    return 0;
+}
