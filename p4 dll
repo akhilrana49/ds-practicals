@@ -1,348 +1,291 @@
 #include <iostream>
 using namespace std;
-void getch();
-void clrscr();
-template <class T>
-class Node
-{
-public:
- T info;
- Node *prev;
- Node *next;
+
+typedef string Elem; // list element type
+class DNode
+{ // doubly linked list node
+private:
+    Elem elem;                // node element value
+    DNode *prev;              // previous node in list
+    DNode *next;              // next node in list
+    friend class DLinkedList; // allow DLinkedList access
 };
-template <class T>
-class DoublyLinkedList
-{
-protected:
- Node<T> *head, *tail;
-public: 
- // Constructor
- DoublyLinkedList()
- {
- head = tail = NULL;
- }
-// Destructor
-~DoublyLinkedList()
-{
- if (this->isEmpty())
- return;
- Node<T> *ptr;
-for (; !isEmpty();)
-{
- ptr = head->next;
-delete head; 
-head = ptr; } 
- head = tail = ptr;
-return; } 
-// Checks if the list is empty - O(1)
-bool isEmpty()
-{
-return (head == NULL || tail == NULL);
+
+class DLinkedList
+{ // doubly linked list
+
+public:
+    DLinkedList();             // constructor
+    ~DLinkedList();            // destructor
+    bool empty() const;        // is list empty?
+    const Elem &front() const; // get front element
+    const Elem &back() const;  // get back element
+    void display();
+    void addFront(const Elem &e);     // add to front of list
+    void addBack(const Elem &e);      // add to back of list
+    void add(int pos, const Elem &e); // add at ith postion
+    void removeFront();               // remove from front
+    void removeBack();                // remove from back
+    void remove(int pos);             // remove from ith position
+    void remove(Elem e);              // Removing an element from a doubly Linked List
+    DNode *search(const Elem &e);     // search for an element x and return its pointer
+
+private:           // local type definitions
+    DNode *header; // list sentinels
+    DNode *trailer;
+
+protected:                             // local utilities
+    void add(DNode *v, const Elem &e); // insert new node before v
+    void remove(DNode *v);             // remove node v
+};
+
+DLinkedList::DLinkedList()
+{                       // constructor
+    header = new DNode; // create sentinels
+    trailer = new DNode;
+    header->next = trailer; // have them point to each other
+    trailer->prev = header;
 }
-// Inserts a node at the beginning - O(1)
-void insertFront(T info)
-{
- Node<T> *temp = new Node<T>();
- temp->info = info;
- temp->next = head;
- temp->prev = NULL;
- if (this->isEmpty())
- tail = temp;
-else 
- head->prev = temp;
- head = temp;
- cout << "Inserted " << info << " at front...";
- this->display();
-return; } 
-// Inserts a node at a specified location - O(n) 
-void insertAtLoc(int loc, T info)
-{
-if (loc == 1) { 
- this->insertFront(info);
-return; } 
- Node<T> *temp = head;
-for (int i = 1; temp != NULL && i < loc - 1; i++) temp = temp->next; 
-if (temp == NULL)
-{
- cout << "Invalid location...\n";
- return;
+
+DLinkedList::~DLinkedList()
+{ // destructor
+    while (!empty())
+        removeFront(); // remove all but sentinels
+    delete header;     // remove the sentinels
+    delete trailer;
 }
-if (temp == tail)
+
+bool DLinkedList::empty() const // is list empty?
 {
-this->insertBack(info);
-return; } 
-Node<T> *node = new Node<T>();
-node->info = info;
-node->next = temp->next;
-node->prev = temp;
-temp->next->prev = node;
-temp->next = node;
-cout << "Inserted node " << info << " at location " << loc << "...";
-this->display();
-return; } 
-// Inserts a node at the end - O(1)
-void insertBack(T info)
-{
- Node<T> *temp = new Node<T>();
- temp->info = info;
- temp->next = NULL;
- temp->prev = tail;
- if (this->isEmpty())
- head = tail = temp;
-else 
- tail->next = temp;
- tail = temp;
- cout << "Inserted " << info << " at back...";
-this->display();
-return; } 
-// Removes a node from the beginning - O(1) 
-void deleteFront()
-{
- if (this->isEmpty())
- {
- cout << "\nList is empty...\n";
-return; }
-Node<T> *temp = head;
-head = temp->next;
-if (this->isEmpty())
- tail = NULL;
-else
- head->prev = NULL;
-delete temp;
-cout << "\nDeleted node at front...";
-this->display();
-return; } 
-// Removes a node at a specified location - O(n) 
-void deleteAtLoc(int loc)
+    return (header->next == trailer);
 }
-if (loc == 1)
+
+const Elem &DLinkedList::front() const // get front element
 {
- this->deleteFront();
-return; } 
-Node<T> *node, *temp = head;
-for (int i = 1; temp != NULL && i < loc - 1; i++) 
- temp = temp->next;
-if (temp == NULL || temp->next == NULL)
-{
- cout << "Invalid location...\n";
-return; } 
-if (temp->next == tail)
-{
- this->deleteBack();
-return; } 
- node = temp->next->next;
- node->prev = temp;
- delete temp->next;
- temp->next = node;
- cout << "Deleted node "
- << "at location " << loc << "...";
- this->display();
-return; }
-// Removes a node at the end - O(1)
-void deleteBack()
-{
- if (this->isEmpty())
- {
- cout << "\nList is empty...\n";
-return; } 
-Node<T> *temp = tail;
-tail = temp->prev;
- if (this->isEmpty())
- head = NULL;
- else
-// Reverses the linked list - O(n)
-void reverse()
-{
- if (this->isEmpty())
- {
- cout << "\nList is empty...\n";
-return; } 
- Node<T> *temp = head,
- *temp1 = NULL;
- tail = temp;
- while (temp != NULL)
- {
- temp1 = temp->prev;
- temp->prev = temp->next;
- temp->next = temp1;
-temp = temp->prev;
- }
- if (temp1 != NULL)
- head = temp1->prev;
- cout << "\nList reversed...";
- this->display();
- return;
-} 
-// Concatenates two lists - O(n)
-void concat(DoublyLinkedList<T> &list)
-{
-if (!list.isEmpty() && !this->isEmpty())
-{
- Node<T> *node,
- *temp = tail,
- *temp1 = list.head;
- while (temp1 != NULL)
-{
- node = new Node<T>();
- node->info = temp1->info;
-node->next = NULL;
- node->prev = temp;
- temp->next = node;
-else 
-cout << "\nOne of the lists is empty...\n"; return; 
-} 
-// Overloads the + operator - O(n)
-void operator+(DoublyLinkedList<T> &list)
-{
- this->concat(list);
-return; } 
-// Searches for an element - O(n)
-Node<T> *search(T ele)
-{
- if (this->isEmpty())
- return nullptr;
-Node<T> *temp = head;
- while (temp != NULL)
- {
- if (temp->info == ele)
- return temp;
- temp = temp->next;
- }
- return nullptr;
+    return header->next->elem;
 }
-// Calculates the number of nodes - O(n) 
-int count()
+
+const Elem &DLinkedList::back() const // get back element
 {
- if (this->isEmpty())
- {
- cout << "\nList is empty...\n";
-return -1; }
-int count = 0;
-Node<T> *temp;
-for (temp = head; temp != NULL;
-temp = temp->next, count++) ; 
- return count;
+    return trailer->prev->elem;
 }
-// Traverses the list and prints all nodes - O(n) 
-cout << "\nList is empty...\n";
-return; } 
- Node<T> *temp = head;
- cout << "\nList: ";
- while (temp->next != NULL)
- {
- cout << temp->info << " -> ";
- temp = temp->next;
- }
- cout << temp->info << endl;
-return; } 
-}; 
-int main(void)
+
+void DLinkedList ::display()
 {
-int info, ele, choice, loc, count;
-DoublyLinkedList<int> list, list2;
-do
-{
- cout << "\tDoubly Linked List\n"
- << "===================================\n"
-<< " (1) Search
-<< " (3) InsertBack
-<< " (5) DeleteFront
-<< " (7) DeleteAtLoc
-<< " (9) Count
-<< " (11) Concat
-(2) InsertFront\n"
-(4) InsertAtLoc\n"
-(6) DeleteBack\n"
-(8) Display\n"
-(10) Reverse\n"
-(0) Exit\n\n";
-cout << "Enter Choice: ";
-cin >> choice;
-switch (choice)
-{
-case 1:
- cout << "\nEnter Search Element: ";
-cin >> ele;
-if (list.search(ele) != nullptr)
-cout << "Element " << ele << " found...\n";
-else 
- cout << "Element not found or List is Empty...\n";
- break;
-case 2:
- cout << "\nEnter Element: ";
- cin >> info;
- list.insertFront(info);
- break;
-case 3:
- cout << "\nEnter Element: ";
-cin >> info;
- list.insertBack(info);
- break;
-case 4:
- cout << "\nEnter Location: ";
- cin >> loc;
- cout << "Enter Element: ";
- cin >> info;
- list.insertAtLoc(loc, info);
- break;
-case 5:
- list.deleteFront();
- break;
-case 6:
- list.deleteBack();
- break;
-case 7:
-cout << "\nEnter Location: ";
- cin >> loc;
- list.deleteAtLoc(loc);
- break;
-case 8:
- list.display();
- break;
-case 9:
- count = list.count();
- if (count != -1)
-cout << "\nNumber of Nodes: " << count << endl; break;
-case 10:
- list.reverse();
- break;
-case 11:
- if (!list2.isEmpty())
- {
-cout << "\nList B:";
- list2.display();
+    DNode *current = header;
+    if (empty())
+    {
+        cout << "List is empty";
+        return;
+    }
+    while (current != NULL)
+    {
+        cout << current->elem << " ";
+        current = current->next;
+    }
 }
-cout << "\nNumber of Nodes to add in List B: "; cin >> count;
-if (count)
-{ 
-cout << "Enter Elements to List B: "; for (int i = 0; i < count; i++)
-{ 
-cin >> info; 
- list2.insertBack(info);
- }
-list + list2;
- }
- break;
- case 0:
- default:
- break;
- }
- getch();
- clrscr();
- } while (choice != 0);
-return 0; } 
-void getch()
+void DLinkedList::addFront(const Elem &e)
 {
- cout << "\nPress any key to continue...";
- cin.ignore();
-cin.get(); 
-return; } 
-void clrscr()
-{
-#ifdef _WIN32
- system("cls");
-#elif _unix_
- system("clear");
-#endif
-return;
+    DNode *newNode = new DNode;
+    newNode->elem = e;
+    newNode->prev = header;
+    newNode->next = header->next;
+
+    header->next->prev = newNode;
+    header->next = newNode;
 }
+
+void DLinkedList::addBack(const Elem &e)
+{
+    DNode *newNode = new DNode;
+    newNode->elem = e;
+    newNode->prev = trailer->prev;
+    newNode->next = trailer;
+    trailer->prev->next = newNode;
+    trailer->prev = newNode;
+}
+
+void DLinkedList ::add(int pos, const Elem &e)
+{
+
+    DNode *newNode = new DNode;
+    newNode->elem = e;
+
+    DNode *ptr = header->next;
+
+    if (pos == 1)
+    {
+        // addFront
+        newNode->prev = header;
+        newNode->next = header->next;
+
+        header->next->prev = newNode;
+        header->next = newNode;
+        return;
+    }
+
+    int count = 1; // ptr is at header->next
+    while (ptr != NULL && count < pos - 1)
+    {
+        ptr = ptr->next;
+        count++;
+    }
+
+    if (ptr == NULL)
+    {
+        cout << "Invalid Position";
+    }
+
+    newNode->prev = ptr;
+    newNode->next = ptr->next;
+
+    ptr->next->prev = newNode;
+    ptr->next = newNode;
+}
+
+void DLinkedList::removeFront()
+{
+    if (empty())
+    {
+        throw "The list is empty";
+    }
+
+    DNode *temp = header->next;
+    header->next = temp->next;
+    temp->next->prev = temp->next;
+    delete temp;
+}
+
+void DLinkedList::removeBack()
+{
+    if (empty())
+    {
+        throw "The list is empty";
+    }
+
+    DNode *temp = trailer->prev;
+    trailer->prev = temp->prev;
+    temp->prev->next = temp->next;
+    delete temp;
+}
+
+void DLinkedList ::remove(int pos)
+{
+    DNode *ptr = header->next;
+
+    if (empty())
+    {
+        cout << "Empty List";
+    }
+
+    if (pos == 1)
+    { // remove front
+
+        header->next = ptr->next;
+        ptr->next->prev = ptr->next;
+        delete ptr;
+    }
+
+    int count = 1;
+    while (ptr != NULL && count < pos - 1)
+    {
+        ptr = ptr->next;
+        count++;
+    }
+
+    if (ptr == NULL)
+    {
+        cout << "Invalid position" << endl;
+    }
+
+    DNode *old = ptr->next;
+    ptr->next = old->next;
+    old->next->prev = ptr;
+    delete old;
+}
+
+void DLinkedList::remove(Elem e)
+{
+    DNode *temp = header->next;
+
+    while (temp != trailer)
+    {
+        if (temp->elem == e)
+        {
+            temp->next->prev = temp->prev;
+            temp->prev->next = temp->next;
+            delete temp;
+            break;
+        }
+        temp = temp->next;
+    }
+
+    if (temp == trailer)
+    {
+        cout << "element not found" << endl;
+    }
+}
+
+void DLinkedList::add(DNode *v, const Elem &e)
+{
+    DNode *u = new DNode;
+    u->elem = e;       // create a new node for e
+    u->next = v;       // link u in between v
+    u->prev = v->prev; // . . .and v->prev
+    v->prev->next = v->prev = u;
+}
+
+void DLinkedList::remove(DNode *v)
+{                       // remove node v
+    DNode *u = v->prev; // predecessor
+    DNode *w = v->next; // successor
+    u->next = w;        // unlink v from list
+    w->prev = u;
+    delete v;
+}
+
+DNode *DLinkedList::search(const Elem &e)
+{
+    //     DNode *ptr=header->next;
+    //    while(ptr!=NULL && ptr->elem x){
+    //     ptr=ptr->next;
+    //    }
+
+    DNode *ptr = header;
+    while (ptr != NULL && ptr->elem != e)
+    {
+        ptr = ptr->next;
+        if (ptr == NULL)
+        {
+            cout << "element not exist" << endl;
+        }
+        else if (ptr->elem == e)
+        {
+            cout <<"\n"<< e << " found at " << ptr << endl;
+            return ptr;
+        }
+    }
+}
+
+
+
+// int main()
+// {
+
+//     DLinkedList l;
+//     l.addFront("neha");
+//     l.addFront("ayush");
+//     l.addFront("priya");
+//     // l.removeBack(); -----> NOT WORKING
+//     // l.removeFront();
+//     // l.remove("neha");
+//     l.add(3, "hello");
+//     // l.remove(3);
+//     // l.removeFront();
+//     // l.removeBack();
+
+//     l.display();
+//     l.search("neha");
+
+//     return 0;
+// }
