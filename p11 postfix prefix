@@ -1,0 +1,172 @@
+#include <iostream>
+#include <stack>
+#include <cmath>
+using namespace std;
+
+bool operand(char a)
+{
+    if (a >= '0' && a <= '9')
+        return true;
+    else
+        return false;
+}
+bool openingbrackets(char a)
+{
+    if (a == '(')
+        return true;
+    else
+        return false;
+}
+bool closingbrackets(char a)
+{
+    if (a == ')')
+        return true;
+    else
+        return false;
+}
+
+int precedence(char a)
+{
+    if (a == '^')
+        return 3;
+    else if (a == '/' || a == '*' || a == '%')
+        return 2;
+    else if (a == '+' || a == '-')
+        return 1;
+    else
+        return -1;
+}
+string postfix(string s)
+{
+    stack<char> l1;
+    string p;
+    int n = s.length();
+    for (int i = 0; i < n; i++)
+    {
+        if (operand(s[i]))
+        {
+            p += s[i];
+        }
+        else
+        {
+            if (openingbrackets(s[i]))
+            {
+                l1.push(s[i]);
+            }
+            else if (closingbrackets(s[i]))
+            {
+                while (!openingbrackets(l1.top()))
+                {
+                    char a = l1.top();
+                    l1.pop();
+                    p += a;
+                }
+                l1.pop();
+            }
+            else
+            {
+                if (!l1.empty() && precedence(s[i]) > precedence(l1.top()))
+                {
+                    l1.push(s[i]);
+                }
+                else
+                {
+                    while (!l1.empty() && precedence(s[i]) <= precedence(l1.top()))
+                    {
+                        char a = l1.top();
+                        l1.pop();
+                        p += a;
+                    }
+                    l1.push(s[i]);
+                }
+            }
+        }
+    }
+    while (!l1.empty())
+    {
+        char a = l1.top();
+        p += a;
+        l1.pop();
+    }
+    return p;
+}
+
+int eval(int x, char a, int y)
+{
+    if (a == '+')
+    {
+        return x + y;
+    }
+    else if (a == '-')
+        return x - y;
+    else if (a == '*')
+        return x * y;
+    else if (a == '/')
+        return x / y;
+    else if (a == '^')
+        return pow(x, y);
+    else
+        return -1;
+}
+int evaluate_postfix(string s)
+{
+    stack<int> stk;
+    int result;
+    int n = s.length();
+    for (int i = 0; i < n; i++)
+    {
+        if (operand(s[i]))
+        {
+            stk.push(s[i] - '0');
+        }
+        else
+        {
+            int op2 = stk.top();
+            stk.pop();
+            int op1 = stk.top();
+            stk.pop();
+            stk.push(eval(op1, s[i], op2));
+        }
+    }
+    result = stk.top();
+    return result;
+}
+int evaluate_prefix(string s)
+{
+    int result;
+    stack<char> st;
+    string s1;
+    for (int i = 0; i < s.length(); i++)
+    {
+        st.push(s[i]);
+    }
+    while (!st.empty())
+    {
+        s1 += st.top();
+        st.pop();
+    }
+    stack<int> stk;
+    int n = s1.length();
+    for (int i = 0; i < n; i++)
+    {
+        if (operand(s1[i]))
+        {
+            stk.push(s1[i] - '0');
+        }
+        else
+        {
+            int op1 = stk.top();
+            stk.pop();
+            int op2 = stk.top();
+            stk.pop();
+            stk.push(eval(op1, s1[i], op2));
+        }
+    }
+    result = stk.top();
+    return result;
+}
+int main()
+{
+    cout << "Value is: " << evaluate_postfix("623+-382/+*2^3+");
+    cout << "Value is: " << evaluate_prefix("+4*5/62");
+}
